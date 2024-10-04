@@ -28,27 +28,45 @@ const videoLoad = () => {
     .catch((error) => console.log(error));
 };
 
+// categoryLoad
+
+const categoryLoad = (id) => {
+  // alert(id);
+  fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
+    .then((res) => res.json())
+    .then((data) => displayVideo(data.category))
+    .catch((error) => console.log(error));
+};
+
 //!Create DisplayCatagories
 
 //display button--------->
 
-const display = (categories) => {
+function display(categories) {
   const categoriesContainer = document.getElementById("categories");
   categories.forEach((item) => {
     console.log(item);
 
     //<--Creat button-->
-    const button = document.createElement("button");
-    button.classList = "btn";
-    button.innerText = item.category;
+    const buttonContainer = document.createElement("div");
+    buttonContainer.innerHTML = `<button id="btn-${item.category_id}" onclick="categoryLoad(${item.category_id})" class="btn category-btn">${item.category}</button>`;
 
-    categoriesContainer.append(button);
+    categoriesContainer.append(buttonContainer);
   });
-};
+}
 
 //Display Videos
 const displayVideo = (videos) => {
   const videoContainer = document.getElementById("video");
+  videoContainer.innerHTML = "";
+  if (videos.length == 0) {
+    videoContainer.classList.remove("grid");
+    videoContainer.innerHTML = `<div class="min-h[300px] flex flex-col justify-center items-center"><img src="./photo/Icon.png" alt="">
+        <h2 class="text-center text-xl font-bold">No Content Here in this Category</h2>
+    </div>`;
+  } else {
+    videoContainer.classList.add("grid");
+  }
   videos.forEach((video) => {
     console.log(video);
 
