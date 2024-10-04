@@ -1,4 +1,6 @@
-// !Date Funcatuion
+// ! Funcatuion
+
+//date funcation
 
 function gettingTime(time) {
   const hour = parseInt(time / 3600);
@@ -7,6 +9,29 @@ function gettingTime(time) {
   remaningSecond = remaningSecond % 60;
   return `${hour} Hour ${munite} Minute ${remaningSecond} Second ago`;
 }
+// button Remove funcation
+const removeActive = () => {
+  const button = document.getElementsByClassName("category-btn");
+  for (let btn of button) {
+    btn.classList.remove("active");
+  }
+};
+
+// details funcation
+const loadDetails = async (videoId) => {
+  console.log(videoId);
+  const url = `https://openapi.programming-hero.com/api/phero-tube/video/${videoId}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  displayDetils(data.video);
+};
+const displayDetils = (video) => {
+  console.log(video);
+  const detailsContainer = document.getElementById("modal-contant");
+  detailsContainer.innerHTML = `<img src=${video.thumbnail} alt="">
+<p>${video.description}</p>`;
+  document.getElementById("customModal").showModal();
+};
 
 //!create loadCatagories
 
@@ -21,8 +46,10 @@ const load = () => {
 
 //video Add----->
 
-const videoLoad = () => {
-  fetch("https://openapi.programming-hero.com/api/phero-tube/videos")
+const videoLoad = (SearchText = "") => {
+  fetch(
+    `https://openapi.programming-hero.com/api/phero-tube/videos?title=${SearchText}`
+  )
     .then((res) => res.json())
     .then((data) => displayVideo(data.videos))
     .catch((error) => console.log(error));
@@ -34,7 +61,14 @@ const categoryLoad = (id) => {
   // alert(id);
   fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
     .then((res) => res.json())
-    .then((data) => displayVideo(data.category))
+    .then((data) => {
+      // btn color remove
+      removeActive();
+      // color add
+      const activeBtn = document.getElementById(`btn-${id}`);
+      activeBtn.classList.add("active");
+      displayVideo(data.category);
+    })
     .catch((error) => console.log(error));
 };
 
@@ -45,7 +79,7 @@ const categoryLoad = (id) => {
 function display(categories) {
   const categoriesContainer = document.getElementById("categories");
   categories.forEach((item) => {
-    console.log(item);
+    // console.log(item);
 
     //<--Creat button-->
     const buttonContainer = document.createElement("div");
@@ -68,7 +102,7 @@ const displayVideo = (videos) => {
     videoContainer.classList.add("grid");
   }
   videos.forEach((video) => {
-    console.log(video);
+    // console.log(video);
 
     // creat Video-------->
     const card = document.createElement("div");
@@ -99,9 +133,10 @@ const displayVideo = (videos) => {
                 ? `<img class="w-5" src="https://img.icons8.com/?size=100&id=D9RtvkuOe31p&format=png&color=000000" alt="">`
                 : ""
             }
-            <div/>
-            <p></p>
-        </div>
+          <div><p><button onclick="loadDetails('${
+            video.video_id
+          }')" class="btn btn-sm btn-error">Details</button></p></div>
+
   </div>`;
     videoContainer.append(card);
   });
@@ -109,26 +144,9 @@ const displayVideo = (videos) => {
 
 //!call Funcation
 
+document.getElementById("Search-input").addEventListener("keyup", (e) => {
+  videoLoad(e.target.value);
+});
+
 load();
 videoLoad();
-
-/* {
-  "status": true,
-  "message": "successfully fetched all the videos",
-  "videos": [
-    {
-      "category_id": "1001",
-      "video_id": "aaaa",
-      "thumbnail": "https://i.ibb.co/L1b6xSq/shape.jpg",
-      "title": "Shape of You",
-      "authors": [
-        {
-          "profile_picture": "https://i.ibb.co/D9wWRM6/olivia.jpg",
-          "profile_name": "Olivia Mitchell",
-          "verified": ""
-        }
-      ],
-      "others": {
-        "views": "100K",
-        "posted_date": "16278"
-      },*/
